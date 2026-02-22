@@ -36,6 +36,10 @@ type PartnerLogoItem = {
   darkOnLight?: boolean;
 };
 
+type LinkedLogoItem = PartnerLogoItem & {
+  href: string;
+};
+
 type CompatibilityItem = {
   platform: string;
   summary: string;
@@ -184,6 +188,33 @@ const compatibilityItems: CompatibilityItem[] = [
     summary:
       'Planned browser and extension support for desktop intervention experiments and telemetry.',
     comingSoon: true,
+  },
+];
+
+const fundedByOrganizations: LinkedLogoItem[] = [
+  {
+    name: 'one sec',
+    src: 'logos/one-sec.png',
+    alt: 'one sec logo',
+    href: 'https://one-sec.app/',
+  },
+  {
+    name: 'NHS',
+    src: 'logos/nhs.svg',
+    alt: 'National Health Service logo',
+    href: 'https://www.nhs.uk/',
+  },
+  {
+    name: 'Bundeszentrale',
+    src: 'logos/bzkj.svg',
+    alt: 'Bundeszentrale logo',
+    href: 'https://www.bzkj.de/',
+  },
+  {
+    name: 'Stanford',
+    src: 'logos/stanford.svg',
+    alt: 'Stanford University wordmark',
+    href: 'https://www.stanford.edu/',
   },
 ];
 
@@ -543,6 +574,36 @@ const PartnerLogo = styled.img<{ darkOnLight?: boolean }>`
   filter: ${(props) => (props.darkOnLight ? 'brightness(0) saturate(100%)' : 'none')};
 `;
 
+const LinkedLogoCard = styled.a`
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+
+  &:focus-visible {
+    outline: 2px solid ${(props) => props.theme.colors.tint.purple};
+    outline-offset: 2px;
+  }
+`;
+
+const FundedByScroller = styled.div`
+  margin-top: ${sectionContentSpacing};
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+`;
+
+const FundedByItem = styled(LinkedLogoCard)`
+  flex: 0 0 clamp(210px, 27vw, 290px);
+  min-width: 210px;
+  scroll-snap-align: start;
+`;
+
 const CompatibilityGrid = styled.div`
   margin-top: ${sectionContentSpacing};
   display: grid;
@@ -780,7 +841,7 @@ function CompatibilitySection() {
               <Heading.Large>{item.platform}</Heading.Large>
               {item.comingSoon ? (
                 <Tag color="gray" variant="tonal">
-                  Coming soon
+                  In Development
                 </Tag>
               ) : null}
             </CompatibilityHeader>
@@ -834,6 +895,38 @@ function PartnerSection() {
           </PartnerCard>
         ))}
       </PartnerGrid>
+    </Section>
+  );
+}
+
+function FundedBySection() {
+  return (
+    <Section id="funded-by">
+      <SectionHeadingRow>
+        <Round.Regular>Funded By</Round.Regular>
+        <Paragraph.Regular>Organizations supporting OpenResearchKit development and studies.</Paragraph.Regular>
+      </SectionHeadingRow>
+
+      <FundedByScroller>
+        {fundedByOrganizations.map((organization) => (
+          <FundedByItem
+            key={organization.name}
+            href={organization.href}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={organization.name}
+            title={organization.name}
+          >
+            <PartnerCard glossBorder>
+              <PartnerLogo
+                src={organization.src}
+                alt={organization.alt}
+                darkOnLight={organization.darkOnLight}
+              />
+            </PartnerCard>
+          </FundedByItem>
+        ))}
+      </FundedByScroller>
     </Section>
   );
 }
@@ -983,6 +1076,8 @@ export default function App() {
             <UsedInSection />
             <Separator transparent />
             <PartnerSection />
+            <Separator transparent />
+            <FundedBySection />
             <Separator transparent />
             <ContactSection />
           </LandingContainer>
