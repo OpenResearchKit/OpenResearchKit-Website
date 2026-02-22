@@ -1,6 +1,9 @@
 import styled from '@emotion/styled';
-import { keyframes } from '@emotion/react';
-import { useEffect, useState } from 'react';
+import { css, keyframes } from '@emotion/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Autoplay from 'embla-carousel-autoplay';
+import useEmblaCarousel from 'embla-carousel-react';
+import type { EmblaCarouselType, EmblaEventType } from 'embla-carousel';
 import {
   Button,
   Card,
@@ -44,6 +47,13 @@ type CompatibilityItem = {
   platform: string;
   summary: string;
   comingSoon?: boolean;
+};
+
+type LogoCarouselConfig = {
+  loop?: boolean;
+  align?: 'center' | 'start';
+  containScroll?: 'trimSnaps' | 'keepSnaps' | false;
+  autoplay?: boolean;
 };
 
 const githubRepositoryUrl = 'https://github.com/OpenResearchKit/OpenResearchKit-Swift';
@@ -545,21 +555,6 @@ const ProductLogo = styled.img`
   object-fit: cover;
 `;
 
-const PartnerGrid = styled.div`
-  margin-top: ${sectionContentSpacing};
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-
-  @media (max-width: 980px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
 const PartnerCard = styled(Card)`
   height: 112px;
   justify-content: center;
@@ -574,34 +569,96 @@ const PartnerLogo = styled.img<{ darkOnLight?: boolean }>`
   filter: ${(props) => (props.darkOnLight ? 'brightness(0) saturate(100%)' : 'none')};
 `;
 
-const LinkedLogoCard = styled.a`
-  display: block;
+const LogoCarouselContainer = styled.div<{ edgeFade?: boolean }>`
+  overflow: hidden;
+  margin: ${sectionContentSpacing} calc((100vw - ${(props) => props.theme.sizes.pageWidth}) / -2) 0;
+  width: 100vw;
+  --slide-size: 280px;
+  --mask-size: calc((100vw - var(--slide-size)) / 2);
+  mask-image: ${(props) =>
+    props.edgeFade
+      ? 'linear-gradient(to right, transparent, black var(--mask-size), black calc(100% - var(--mask-size)), transparent)'
+      : 'none'};
+
+  @media (max-width: calc(${(props) => props.theme.sizes.pageWidth} + ${(props) =>
+      props.theme.spaces.double} * 2)) {
+    margin: ${sectionContentSpacing} -${(props) => props.theme.spaces.double} 0;
+    width: 100vw;
+  }
+
+  ${(props) =>
+    props.theme.breakpoints.compact.whenActive(css`
+      mask-image: none;
+      --slide-size: calc(100% - ${props.theme.spaces.double});
+    `)}
+`;
+
+const LogoCarouselTrack = styled.div`
+  display: flex;
+  align-items: center;
+  touch-action: pan-y pinch-zoom;
+`;
+
+const LogoCarouselSlide = styled.div`
+  transform: translate3d(0, 0, 0);
+  flex: 0 0 var(--slide-size);
+  min-width: 0;
+`;
+
+const LogoSlideCard = styled.div`
+  transition: transform 0.2s ease;
+`;
+
+const CarouselControls = styled.div`
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+`;
+
+const CarouselControlButton = styled(Button.Secondary)`
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+`;
+
+const FundedByLogoRow = styled.div`
+  margin-top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 38px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 18px;
+`;
+
+const FundedByLogoLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   text-decoration: none;
   color: inherit;
-  border-radius: 12px;
+  padding: 8px 12px;
 
   &:focus-visible {
     outline: 2px solid ${(props) => props.theme.colors.tint.purple};
     outline-offset: 2px;
+    border-radius: 6px;
   }
 `;
 
-const FundedByScroller = styled.div`
-  margin-top: ${sectionContentSpacing};
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 6px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-`;
-
-const FundedByItem = styled(LinkedLogoCard)`
-  flex: 0 0 clamp(210px, 27vw, 290px);
-  min-width: 210px;
-  scroll-snap-align: start;
+const FundedByLogo = styled.img<{ darkOnLight?: boolean }>`
+  max-height: 40px;
+  max-width: 170px;
+  width: auto;
+  object-fit: contain;
+  filter: ${(props) => (props.darkOnLight ? 'brightness(0) saturate(100%)' : 'none')};
 `;
 
 const CompatibilityGrid = styled.div`
@@ -636,6 +693,25 @@ const HeroBadgeWrap = styled.div`
   width: fit-content;
   align-self: flex-start;
   white-space: nowrap;
+`;
+
+const HeroFundedBy = styled.div`
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: ${(props) => props.theme.transparentHairlineBorder};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+`;
+
+const HeroFundedByTitle = styled(Paragraph.Small)`
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: ${(props) => props.theme.colors.text.tertiary};
 `;
 
 const ContactCard = styled(Card)`
@@ -691,6 +767,105 @@ type HeroSectionProps = {
   onContactClick: () => void;
 };
 
+function useScaledLogoCarousel(config: LogoCarouselConfig = {}) {
+  const { loop = true, align = 'center', containScroll = 'trimSnaps', autoplay = true } = config;
+
+  const [emblaRef, embla] = useEmblaCarousel(
+    {
+      loop,
+      align,
+      containScroll,
+    },
+    autoplay
+      ? [
+          Autoplay({
+            delay: 5000,
+            stopOnInteraction: false,
+          }),
+        ]
+      : [],
+  );
+
+  const scaleNodes = useRef<HTMLElement[]>([]);
+
+  const setScaleNodes = useCallback((emblaApi: EmblaCarouselType) => {
+    scaleNodes.current = emblaApi
+      .slideNodes()
+      .map((node) => node.querySelector('.embla__slide_card') as HTMLElement)
+      .filter(Boolean);
+  }, []);
+
+  const scale = useCallback((emblaApi: EmblaCarouselType, eventName?: EmblaEventType) => {
+    const engine = emblaApi.internalEngine();
+    const scrollProgress = emblaApi.scrollProgress();
+    const slidesInView = emblaApi.slidesInView();
+    const isScrollEvent = eventName === 'scroll';
+
+    emblaApi.scrollSnapList().forEach((scrollSnap, snapIndex) => {
+      let diffToTarget = scrollSnap - scrollProgress;
+      const slidesInSnap = engine.slideRegistry[snapIndex];
+
+      slidesInSnap.forEach((slideIndex) => {
+        if (isScrollEvent && !slidesInView.includes(slideIndex)) return;
+
+        if (engine.options.loop) {
+          engine.slideLooper.loopPoints.forEach((loopItem) => {
+            const target = loopItem.target();
+
+            if (slideIndex === loopItem.index && target !== 0) {
+              const sign = Math.sign(target);
+
+              if (sign === -1) {
+                diffToTarget = scrollSnap - (1 + scrollProgress);
+              }
+              if (sign === 1) {
+                diffToTarget = scrollSnap + (1 - scrollProgress);
+              }
+            }
+          });
+        }
+
+        const scaleValue = 1 - Math.abs(diffToTarget * 1.0);
+        const cappedScale = Math.min(Math.max(scaleValue, 0), 1);
+        const scaleNode = scaleNodes.current[slideIndex];
+
+        if (scaleNode) {
+          scaleNode.style.transform = `scale(${cappedScale})`;
+        }
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!embla) return;
+
+    setScaleNodes(embla);
+    scale(embla);
+
+    embla.on('reInit', setScaleNodes);
+    embla.on('reInit', scale);
+    embla.on('scroll', scale);
+    embla.on('slideFocus', scale);
+
+    return () => {
+      embla.off('reInit', setScaleNodes);
+      embla.off('reInit', scale);
+      embla.off('scroll', scale);
+      embla.off('slideFocus', scale);
+    };
+  }, [embla, scale, setScaleNodes]);
+
+  const scrollPrev = useCallback(() => {
+    embla?.scrollPrev();
+  }, [embla]);
+
+  const scrollNext = useCallback(() => {
+    embla?.scrollNext();
+  }, [embla]);
+
+  return { emblaRef, scrollPrev, scrollNext };
+}
+
 function HeroSection({ onContactClick }: HeroSectionProps) {
   return (
     <Hero glossBorder>
@@ -738,6 +913,28 @@ function HeroSection({ onContactClick }: HeroSectionProps) {
           </HeroVideo>
         </HeroVideoFrame>
       </HeroLayout>
+
+      <HeroFundedBy>
+        <HeroFundedByTitle>Funded by</HeroFundedByTitle>
+        <FundedByLogoRow>
+          {fundedByOrganizations.map((organization) => (
+            <FundedByLogoLink
+              key={organization.name}
+              href={organization.href}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={organization.name}
+              title={organization.name}
+            >
+              <FundedByLogo
+                src={organization.src}
+                alt={organization.alt}
+                darkOnLight={organization.darkOnLight}
+              />
+            </FundedByLogoLink>
+          ))}
+        </FundedByLogoRow>
+      </HeroFundedBy>
     </Hero>
   );
 }
@@ -878,6 +1075,8 @@ function UsedInSection() {
 }
 
 function PartnerSection() {
+  const { emblaRef, scrollPrev, scrollNext } = useScaledLogoCarousel();
+
   return (
     <Section id="partners">
       <SectionHeadingRow>
@@ -888,45 +1087,27 @@ function PartnerSection() {
         </Paragraph.Regular>
       </SectionHeadingRow>
 
-      <PartnerGrid>
-        {researchPartners.map((partner) => (
-          <PartnerCard key={partner.name} glossBorder>
-            <PartnerLogo src={partner.src} alt={partner.alt} darkOnLight={partner.darkOnLight} />
-          </PartnerCard>
-        ))}
-      </PartnerGrid>
-    </Section>
-  );
-}
-
-function FundedBySection() {
-  return (
-    <Section id="funded-by">
-      <SectionHeadingRow>
-        <Round.Regular>Funded By</Round.Regular>
-        <Paragraph.Regular>Organizations supporting OpenResearchKit development and studies.</Paragraph.Regular>
-      </SectionHeadingRow>
-
-      <FundedByScroller>
-        {fundedByOrganizations.map((organization) => (
-          <FundedByItem
-            key={organization.name}
-            href={organization.href}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={organization.name}
-            title={organization.name}
-          >
-            <PartnerCard glossBorder>
-              <PartnerLogo
-                src={organization.src}
-                alt={organization.alt}
-                darkOnLight={organization.darkOnLight}
-              />
-            </PartnerCard>
-          </FundedByItem>
-        ))}
-      </FundedByScroller>
+      <LogoCarouselContainer className="embla" edgeFade ref={emblaRef}>
+        <LogoCarouselTrack className="embla__container">
+          {researchPartners.map((partner) => (
+            <LogoCarouselSlide key={partner.name}>
+              <LogoSlideCard className="embla__slide_card">
+                <PartnerCard glossBorder>
+                  <PartnerLogo src={partner.src} alt={partner.alt} darkOnLight={partner.darkOnLight} />
+                </PartnerCard>
+              </LogoSlideCard>
+            </LogoCarouselSlide>
+          ))}
+        </LogoCarouselTrack>
+      </LogoCarouselContainer>
+      <CarouselControls>
+        <CarouselControlButton asComponent="button" onClick={scrollPrev} aria-label="Previous organization">
+          <Icon name="ChevronLeft" size={16} />
+        </CarouselControlButton>
+        <CarouselControlButton asComponent="button" onClick={scrollNext} aria-label="Next organization">
+          <Icon name="ChevronRight" size={16} />
+        </CarouselControlButton>
+      </CarouselControls>
     </Section>
   );
 }
@@ -1076,8 +1257,6 @@ export default function App() {
             <UsedInSection />
             <Separator transparent />
             <PartnerSection />
-            <Separator transparent />
-            <FundedBySection />
             <Separator transparent />
             <ContactSection />
           </LandingContainer>
