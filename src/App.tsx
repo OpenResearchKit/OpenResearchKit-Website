@@ -10,6 +10,7 @@ import {
   Paragraph,
   Round,
   Separator,
+  Tag,
   ThemeProvider,
 } from '@riedel-wtf/one-sec-ui';
 
@@ -35,9 +36,16 @@ type PartnerLogoItem = {
   darkOnLight?: boolean;
 };
 
+type CompatibilityItem = {
+  platform: string;
+  summary: string;
+  comingSoon?: boolean;
+};
+
 const githubRepositoryUrl = 'https://github.com/OpenResearchKit/OpenResearchKit-Swift';
 const davidContactLink = 'mailto:david@one-sec.app?subject=OpenResearchKit%20research%20collaboration';
 const mobileNavigationBreakpoint = 780;
+const sectionContentSpacing = 'clamp(18px, 2.2vw, 26px)';
 
 const studies: Study[] = [
   {
@@ -45,7 +53,7 @@ const studies: Study[] = [
     publisher: 'PNAS',
     date: 'Published April 10, 2023',
     summary:
-      'Peer-reviewed evidence that one-sec style friction interventions can significantly reduce app use while preserving user agency.',
+      'Peer-reviewed evidence that one-sec interventions can significantly reduce app use while preserving user agency.',
     href: 'https://www.pnas.org/doi/10.1073/pnas.2213114120',
   },
   {
@@ -88,7 +96,7 @@ const studies: Study[] = [
     publisher: 'OSF',
     date: 'Published January 16, 2025',
     summary:
-      'German-language publication describing digital intervention mechanics and behavior-change framing for adolescents.',
+      'German-language publication describing digital intervention design and behavior-change framing for adolescents.',
     href:
       'https://scholar.google.com/citations?view_op=view_citation&hl=en&user=Wv83-z8AAAAJ&citation_for_view=Wv83-z8AAAAJ:Y0pCki6q_DkC',
   },
@@ -122,6 +130,11 @@ const researchPartners: PartnerLogoItem[] = [
     alt: 'Open Science Framework logo',
   },
   {
+    name: 'NHS',
+    src: 'logos/nhs.svg',
+    alt: 'National Health Service logo',
+  },
+  {
     name: 'Danish Competition and Consumer Authority',
     src: 'logos/dcaca.png',
     alt: 'Danish Competition and Consumer Authority logo',
@@ -151,6 +164,26 @@ const researchPartners: PartnerLogoItem[] = [
     name: 'LMU Munich',
     src: 'logos/lmu-munich.svg',
     alt: 'LMU Munich wordmark',
+  },
+];
+
+const compatibilityItems: CompatibilityItem[] = [
+  {
+    platform: 'iOS',
+    summary:
+      'Production-ready support for iPhone-based studies with on-device processing, in-app surveys, and UUID-based data matching.',
+  },
+  {
+    platform: 'Android',
+    summary:
+      'Planned Android support for cross-platform deployment and synchronized intervention research.',
+    comingSoon: true,
+  },
+  {
+    platform: 'Web / Browser Extensions',
+    summary:
+      'Planned browser and extension support for desktop intervention experiments and telemetry.',
+    comingSoon: true,
   },
 ];
 
@@ -435,7 +468,7 @@ const SectionHeadingRow = styled.div`
 `;
 
 const ResearchGrid = styled.div`
-  margin-top: 14px;
+  margin-top: ${sectionContentSpacing};
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
@@ -459,7 +492,7 @@ const CTA = styled(Button.Tertiary)`
 `;
 
 const LogoGrid = styled.div`
-  margin-top: 14px;
+  margin-top: ${sectionContentSpacing};
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
@@ -482,7 +515,7 @@ const ProductLogo = styled.img`
 `;
 
 const PartnerGrid = styled.div`
-  margin-top: 14px;
+  margin-top: ${sectionContentSpacing};
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
@@ -510,7 +543,42 @@ const PartnerLogo = styled.img<{ darkOnLight?: boolean }>`
   filter: ${(props) => (props.darkOnLight ? 'brightness(0) saturate(100%)' : 'none')};
 `;
 
+const CompatibilityGrid = styled.div`
+  margin-top: ${sectionContentSpacing};
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (max-width: 980px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const CompatibilityCard = styled(Card)`
+  gap: 10px;
+  background: #ffffff;
+`;
+
+const CompatibilityHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+`;
+
+const HeroBadgeWrap = styled.div`
+  display: inline-flex;
+  width: fit-content;
+  align-self: flex-start;
+  white-space: nowrap;
+`;
+
 const ContactCard = styled(Card)`
+  margin-top: ${sectionContentSpacing};
   display: flex;
   flex-direction: row;
   gap: 20px;
@@ -567,15 +635,18 @@ function HeroSection({ onContactClick }: HeroSectionProps) {
     <Hero glossBorder>
       <HeroLayout>
         <HeroCopy>
+          <HeroBadgeWrap>
+            <Tag color="purple" variant="default">
+              Open Source
+            </Tag>
+          </HeroBadgeWrap>
           <Heading.Huge as="h1">
             Run intervention studies in the wild, not only in the lab.
           </Heading.Huge>
           <HeroSummary>
-            OpenResearchKit is a framework for building, deploying, and evaluating
-            behavior-change interventions with friction mechanics and research-grade telemetry.
-            It supports privacy-preserving study pipelines where participant data stays anonymous,
-            while intervention events and survey responses can be pseudonymously linked for
-            high-quality longitudinal analysis without re-identification.
+            OpenResearchKit provides open-source data collection and study infrastructure with
+            cutting-edge research techniques for on-device processing, in-app surveys, and
+            UUID-based matching between app metadata and survey responses.
           </HeroSummary>
           <HeroActions>
             <HeroPrimaryCTA
@@ -635,6 +706,88 @@ function ResearchSection() {
           </ResearchCard>
         ))}
       </ResearchGrid>
+    </Section>
+  );
+}
+
+function OpenSourceSection() {
+  return (
+    <Section id="open-source">
+      <ResearchCard glossBorder>
+        <Round.Regular>Open Source</Round.Regular>
+        <Heading.Large>Transparent infrastructure for reproducible digital studies.</Heading.Large>
+        <Paragraph.Regular>
+          OpenResearchKit is open source. Use the public repository for audits, forks, and
+          cross-site replications of study infrastructure.
+        </Paragraph.Regular>
+        <CTA asComponent="anchor" href={githubRepositoryUrl} target="_blank" rel="noreferrer">
+          View on GitHub →
+        </CTA>
+      </ResearchCard>
+    </Section>
+  );
+}
+
+function PrivacySection() {
+  return (
+    <Section id="privacy">
+      <SectionHeadingRow>
+        <Round.Regular>Privacy & Security</Round.Regular>
+        <Paragraph.Regular>
+          Privacy-preserving study infrastructure with security-conscious data handling and
+          ethics-ready documentation.
+        </Paragraph.Regular>
+      </SectionHeadingRow>
+
+      <ResearchGrid>
+        <ResearchCard glossBorder>
+          <Heading.Large>Anonymous, UUID-linked study data.</Heading.Large>
+          <Paragraph.Regular>
+            App metadata events and survey responses can be pseudonymously linked via UUIDs for
+            longitudinal analysis without storing personal information.
+          </Paragraph.Regular>
+        </ResearchCard>
+
+        <ResearchCard glossBorder>
+          <Heading.Large>Ethics approval ready.</Heading.Large>
+          <Paragraph.Regular>
+            Data minimization, consent-oriented flows, and exportable study records support
+            IRB/ethics reviews and compliance documentation.
+          </Paragraph.Regular>
+          <CTA asComponent="anchor" href={davidContactLink}>
+            Discuss ethics setup →
+          </CTA>
+        </ResearchCard>
+      </ResearchGrid>
+    </Section>
+  );
+}
+
+function CompatibilitySection() {
+  return (
+    <Section id="compatibility">
+      <SectionHeadingRow>
+        <Round.Regular>Compatibility</Round.Regular>
+        <Paragraph.Regular>
+          Use a shared study infrastructure across platforms as support expands.
+        </Paragraph.Regular>
+      </SectionHeadingRow>
+
+      <CompatibilityGrid>
+        {compatibilityItems.map((item) => (
+          <CompatibilityCard key={item.platform} glossBorder>
+            <CompatibilityHeader>
+              <Heading.Large>{item.platform}</Heading.Large>
+              {item.comingSoon ? (
+                <Tag color="gray" variant="tonal">
+                  Coming soon
+                </Tag>
+              ) : null}
+            </CompatibilityHeader>
+            <Paragraph.Regular>{item.summary}</Paragraph.Regular>
+          </CompatibilityCard>
+        ))}
+      </CompatibilityGrid>
     </Section>
   );
 }
@@ -818,6 +971,12 @@ export default function App() {
         <ContentShell>
           <LandingContainer>
             <HeroSection onContactClick={() => scrollToSection('contact')} />
+            <Separator transparent />
+            <OpenSourceSection />
+            <Separator transparent />
+            <PrivacySection />
+            <Separator transparent />
+            <CompatibilitySection />
             <Separator transparent />
             <ResearchSection />
             <Separator transparent />
