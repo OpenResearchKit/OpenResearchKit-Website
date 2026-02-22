@@ -97,13 +97,13 @@ const studies: Study[] = [
 const usedInProducts: ProductLogoItem[] = [
   {
     name: 'one sec',
-    src: '/logos/one-sec.png',
+    src: 'logos/one-sec.png',
     alt: 'one sec logo',
     description: 'Real-world intervention studies on digital habits and behavior change.',
   },
   {
     name: 'Structured',
-    src: '/logos/structured.jpg',
+    src: 'logos/structured.jpg',
     alt: 'Structured logo',
     description: 'Task-focused intervention research integrated into daily planning workflows.',
   },
@@ -112,44 +112,44 @@ const usedInProducts: ProductLogoItem[] = [
 const researchPartners: PartnerLogoItem[] = [
   {
     name: 'Max-Planck Institute',
-    src: '/logos/max-planck-institute.png',
+    src: 'logos/max-planck-institute.png',
     alt: 'Max-Planck Institute logo',
     darkOnLight: true,
   },
   {
     name: 'Open Science Framework',
-    src: '/logos/osf.svg',
+    src: 'logos/osf.svg',
     alt: 'Open Science Framework logo',
   },
   {
     name: 'Danish Competition and Consumer Authority',
-    src: '/logos/dcaca.png',
+    src: 'logos/dcaca.png',
     alt: 'Danish Competition and Consumer Authority logo',
     darkOnLight: true,
   },
   {
     name: 'German Federal Office for the Protection of Minors',
-    src: '/logos/bzkj.svg',
+    src: 'logos/bzkj.svg',
     alt: 'BzKJ logo',
   },
   {
     name: 'Stanford University',
-    src: '/logos/stanford.svg',
+    src: 'logos/stanford.svg',
     alt: 'Stanford University wordmark',
   },
   {
     name: 'University of Cambridge',
-    src: '/logos/cambridge.svg',
+    src: 'logos/cambridge.svg',
     alt: 'University of Cambridge wordmark',
   },
   {
     name: 'University of Oxford',
-    src: '/logos/oxford.svg',
+    src: 'logos/oxford.svg',
     alt: 'University of Oxford wordmark',
   },
   {
     name: 'LMU Munich',
-    src: '/logos/lmu-munich.svg',
+    src: 'logos/lmu-munich.svg',
     alt: 'LMU Munich wordmark',
   },
 ];
@@ -412,12 +412,12 @@ const HeroVideo = styled.video`
   aspect-ratio: 2 / 3;
   object-fit: cover;
   background: transparent;
-  mask-image: url('/images/one-sec-demo-mask.webp');
+  mask-image: url('images/one-sec-demo-mask.webp');
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
   mask-mode: alpha;
-  -webkit-mask-image: url('/images/one-sec-demo-mask.webp');
+  -webkit-mask-image: url('images/one-sec-demo-mask.webp');
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
@@ -599,10 +599,10 @@ function HeroSection({ onContactClick }: HeroSectionProps) {
             muted
             playsInline
             preload="metadata"
-            poster="/images/one-sec-demo-mask.webp"
+            poster="images/one-sec-demo-mask.webp"
           >
-            <source src="/videos/one-sec-demo.mp4" type="video/mp4" />
-            <source src="/videos/one-sec-demo.webm" type="video/webm" />
+            <source src="videos/one-sec-demo.mp4" type="video/mp4" />
+            <source src="videos/one-sec-demo.webm" type="video/webm" />
           </HeroVideo>
         </HeroVideoFrame>
       </HeroLayout>
@@ -696,7 +696,7 @@ function ContactSection() {
       </SectionHeadingRow>
 
       <ContactCard glossBorder>
-        <ContactImage src="/images/david.png" alt="Dr. David J. Grüning" />
+        <ContactImage src="images/david.png" alt="Dr. David J. Grüning" />
         <ContactContent>
           <Heading.Large>Dr. David J. Grüning</Heading.Large>
           <Paragraph.Small>Lead scientist at one sec</Paragraph.Small>
