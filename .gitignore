@@ -1,10 +1,15 @@
 # dependencies
 node_modules/
+vendor/one-sec-ui/node_modules/
 
 # build output
 dist/
 .vite/
 coverage/
+!vendor/one-sec-ui/dist/
+!vendor/one-sec-ui/dist/**
+vendor/one-sec-ui/dist/*.map
+vendor/one-sec-ui/src/
 
 # logs
 logs/
