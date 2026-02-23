@@ -12,7 +12,6 @@ import {
   PageContainer,
   Paragraph,
   Round,
-  Separator,
   Tag,
   ThemeProvider,
 } from '@riedel-wtf/one-sec-ui';
@@ -46,6 +45,7 @@ type LinkedLogoItem = PartnerLogoItem & {
 type CompatibilityItem = {
   platform: string;
   summary: string;
+  icon: 'AppStore' | 'GooglePlay' | 'Globe';
   comingSoon?: boolean;
 };
 
@@ -139,11 +139,6 @@ const researchPartners: PartnerLogoItem[] = [
     darkOnLight: true,
   },
   {
-    name: 'Open Science Framework',
-    src: 'logos/osf.svg',
-    alt: 'Open Science Framework logo',
-  },
-  {
     name: 'NHS',
     src: 'logos/nhs.svg',
     alt: 'National Health Service logo',
@@ -184,17 +179,20 @@ const researchPartners: PartnerLogoItem[] = [
 const compatibilityItems: CompatibilityItem[] = [
   {
     platform: 'iOS',
+    icon: 'AppStore',
     summary:
       'Production-ready support for iPhone-based studies with on-device processing, in-app surveys, and UUID-based data matching.',
   },
   {
     platform: 'Android',
+    icon: 'GooglePlay',
     summary:
       'Planned Android support for cross-platform deployment and synchronized intervention research.',
     comingSoon: true,
   },
   {
     platform: 'Web / Browser Extensions',
+    icon: 'Globe',
     summary:
       'Planned browser and extension support for desktop intervention experiments and telemetry.',
     comingSoon: true,
@@ -228,6 +226,16 @@ const fundedByOrganizations: LinkedLogoItem[] = [
   },
 ];
 
+const suggestedCitationBibtex = `@software{openresearchkit,
+  author       = {Riedel, Frederik and Fischer, Lennart and Grüning, David J.},
+  title        = {{OpenResearchKit: On-Device Study Infrastructure and Survey Data Collection}},
+  year         = {2026},
+  url          = {https://openresearchkit.org},
+  note         = {Accessed: 2026-02-23}
+}`;
+
+const suggestedCitationApa7 = `Riedel, F., Fischer, L., & Grüning, D. J. (2026). OpenResearhKit: On-device study infrastructure and survey data collection. openresearchkit.org`;
+
 const floatIn = keyframes`
   from {
     opacity: 0;
@@ -252,7 +260,7 @@ const ContentShell = styled.div`
 `;
 
 const LandingContainer = styled(PageContainer)`
-  gap: 36px;
+  gap: 64px;
 `;
 
 const TopNavigation = styled.header`
@@ -280,11 +288,12 @@ const TopNavigationContent = styled.nav`
   }
 `;
 
-const BrandTitle = styled.span`
+const BrandTitle = styled.a`
   color: ${(props) => props.theme.colors.text.primary};
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
+  text-decoration: none;
 `;
 
 const DesktopNavigation = styled.div`
@@ -328,21 +337,21 @@ const MobileMenuButtonContainer = styled.div<{ open: boolean }>`
   display: none;
 
   @media (max-width: ${mobileNavigationBreakpoint}px) {
-    display: block;
+    display: flex;
     margin-left: auto;
-    padding: ${(props) => props.theme.spaces.minimal};
-    margin-right: -${(props) => props.theme.spaces.minimal};
+    padding: 2px;
+    margin-right: 0;
     border-radius: 99px;
-    box-sizing: content-box;
+    box-sizing: border-box;
     border: 1px solid ${(props) => (props.open ? props.theme.colors.hairline : 'transparent')};
     transition: border-color 0.1s;
   }
 `;
 
 const MobileMenuToggle = styled(Button.Secondary)`
-  height: 38px;
-  min-width: 38px;
-  padding: 0 8px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0 6px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -383,6 +392,8 @@ const MobileNavigationPanel = styled.div<{ open: boolean }>`
 `;
 
 const MobileNavigationInner = styled.div`
+  width: 100%;
+  box-sizing: border-box;
   max-width: ${(props) => props.theme.sizes.pageWidth};
   margin: 0 auto;
   padding: 10px ${(props) => props.theme.spaces.standard} 14px;
@@ -393,8 +404,12 @@ const MobileNavigationInner = styled.div`
 
 const MobileNavigationButton = styled(Button.Secondary)`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 38px;
   padding: 0 12px;
+  box-sizing: border-box;
+  align-self: stretch;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
@@ -402,8 +417,12 @@ const MobileNavigationButton = styled(Button.Secondary)`
 
 const MobileNavigationCTA = styled(Button.Primary)`
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   height: 38px;
   padding: 0 12px;
+  box-sizing: border-box;
+  align-self: stretch;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -412,7 +431,7 @@ const MobileNavigationCTA = styled(Button.Primary)`
 const Hero = styled(Card)`
   position: relative;
   overflow: hidden;
-  padding: 34px;
+  padding: clamp(30px, 4vw, 42px);
   background: linear-gradient(145deg, #fff 0%, #fffdf8 43%, #f8ffff 100%);
 
   &::before {
@@ -512,7 +531,7 @@ const ResearchGrid = styled.div`
   margin-top: ${sectionContentSpacing};
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 20px;
 
   @media (max-width: 900px) {
     grid-template-columns: 1fr;
@@ -520,7 +539,8 @@ const ResearchGrid = styled.div`
 `;
 
 const ResearchCard = styled(Card)`
-  gap: 12px;
+  gap: 14px;
+  padding: clamp(22px, 2.6vw, 30px);
   background: #ffffff;
 `;
 
@@ -532,11 +552,68 @@ const CTA = styled(Button.Tertiary)`
   align-self: flex-start;
 `;
 
+const CitationCodeBlock = styled.pre`
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: auto;
+`;
+
+const CitationBlocks = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const CitationItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const CitationItemHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+`;
+
+const CitationKind = styled(Paragraph.Small)`
+  font-weight: 600;
+`;
+
+const CitationCopyButton = styled(Button.Secondary)`
+  height: 32px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+`;
+
+const CitationPlainText = styled(Paragraph.Regular)`
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.04);
+`;
+
 const LogoGrid = styled.div`
   margin-top: ${sectionContentSpacing};
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 20px;
 
   @media (max-width: 700px) {
     grid-template-columns: 1fr;
@@ -544,7 +621,8 @@ const LogoGrid = styled.div`
 `;
 
 const ProductLogoCard = styled(Card)`
-  gap: 12px;
+  gap: 14px;
+  padding: clamp(22px, 2.6vw, 30px);
   align-items: flex-start;
 `;
 
@@ -556,7 +634,8 @@ const ProductLogo = styled.img`
 `;
 
 const PartnerCard = styled(Card)`
-  height: 112px;
+  height: 124px;
+  padding: 20px;
   justify-content: center;
   align-items: center;
   background: #ffffff;
@@ -602,6 +681,8 @@ const LogoCarouselTrack = styled.div`
 const LogoCarouselSlide = styled.div`
   transform: translate3d(0, 0, 0);
   flex: 0 0 var(--slide-size);
+  padding: 0 8px;
+  box-sizing: border-box;
   min-width: 0;
 `;
 
@@ -636,6 +717,14 @@ const FundedByLogoRow = styled.div`
   justify-content: center;
   width: 100%;
   padding: 8px 18px;
+
+  @media (max-width: 780px) {
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 18px 24px;
+    padding: 8px 4px;
+  }
 `;
 
 const FundedByLogoLink = styled.a`
@@ -665,7 +754,7 @@ const CompatibilityGrid = styled.div`
   margin-top: ${sectionContentSpacing};
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 20px;
 
   @media (max-width: 980px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -677,7 +766,8 @@ const CompatibilityGrid = styled.div`
 `;
 
 const CompatibilityCard = styled(Card)`
-  gap: 10px;
+  gap: 12px;
+  padding: clamp(22px, 2.6vw, 30px);
   background: #ffffff;
 `;
 
@@ -686,6 +776,15 @@ const CompatibilityHeader = styled.div`
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+`;
+
+const CompatibilityIconWrap = styled.div`
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: ${(props) => props.theme.colors.tint.purple};
 `;
 
 const HeroBadgeWrap = styled.div`
@@ -712,13 +811,15 @@ const HeroFundedByTitle = styled(Paragraph.Small)`
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: ${(props) => props.theme.colors.text.tertiary};
+  text-align: center;
 `;
 
 const ContactCard = styled(Card)`
   margin-top: ${sectionContentSpacing};
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 24px;
+  padding: clamp(22px, 2.6vw, 30px);
   align-items: center;
 
   @media (max-width: 780px) {
@@ -975,12 +1076,80 @@ function OpenSourceSection() {
         <Round.Regular>Open Source</Round.Regular>
         <Heading.Large>Transparent infrastructure for reproducible digital studies.</Heading.Large>
         <Paragraph.Regular>
-          OpenResearchKit is open source. Use the public repository for audits, forks, and
-          cross-site replications of study infrastructure.
+          OpenResearchKit is open source. Use the public repository for audits, forks, and easier
+          reuse of the same study setup across different research teams.
         </Paragraph.Regular>
         <CTA asComponent="anchor" href={githubRepositoryUrl} target="_blank" rel="noreferrer">
           View on GitHub →
         </CTA>
+      </ResearchCard>
+    </Section>
+  );
+}
+
+function CitationSection() {
+  const [copiedCitation, setCopiedCitation] = useState<'bibtex' | 'apa7' | null>(null);
+
+  const copyCitation = useCallback(async (value: string, key: 'bibtex' | 'apa7') => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+      } else if (typeof document !== 'undefined') {
+        const helper = document.createElement('textarea');
+        helper.value = value;
+        helper.setAttribute('readonly', '');
+        helper.style.position = 'fixed';
+        helper.style.opacity = '0';
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand('copy');
+        document.body.removeChild(helper);
+      }
+
+      setCopiedCitation(key);
+
+      if (typeof window !== 'undefined') {
+        window.setTimeout(() => {
+          setCopiedCitation((current) => (current === key ? null : current));
+        }, 1600);
+      }
+    } catch {
+      setCopiedCitation(null);
+    }
+  }, []);
+
+  return (
+    <Section id="citation">
+      <SectionHeadingRow>
+        <Round.Regular>Suggested Citation</Round.Regular>
+        <Paragraph.Regular>
+          To reference OpenResearchKit in case you want to refer to it or use it, please use the
+          below citation-suggestion.
+        </Paragraph.Regular>
+      </SectionHeadingRow>
+
+      <ResearchCard glossBorder>
+        <CitationBlocks>
+          <CitationItem>
+            <CitationItemHeader>
+              <CitationKind>BibTeX</CitationKind>
+              <CitationCopyButton asComponent="button" onClick={() => copyCitation(suggestedCitationBibtex, 'bibtex')}>
+                {copiedCitation === 'bibtex' ? 'Copied' : 'Copy BibTeX'}
+              </CitationCopyButton>
+            </CitationItemHeader>
+            <CitationCodeBlock>{suggestedCitationBibtex}</CitationCodeBlock>
+          </CitationItem>
+
+          <CitationItem>
+            <CitationItemHeader>
+              <CitationKind>APA 7</CitationKind>
+              <CitationCopyButton asComponent="button" onClick={() => copyCitation(suggestedCitationApa7, 'apa7')}>
+                {copiedCitation === 'apa7' ? 'Copied' : 'Copy APA 7'}
+              </CitationCopyButton>
+            </CitationItemHeader>
+            <CitationPlainText>{suggestedCitationApa7}</CitationPlainText>
+          </CitationItem>
+        </CitationBlocks>
       </ResearchCard>
     </Section>
   );
@@ -1035,6 +1204,9 @@ function CompatibilitySection() {
         {compatibilityItems.map((item) => (
           <CompatibilityCard key={item.platform} glossBorder>
             <CompatibilityHeader>
+              <CompatibilityIconWrap>
+                <Icon name={item.icon} size={16} />
+              </CompatibilityIconWrap>
               <Heading.Large>{item.platform}</Heading.Large>
               {item.comingSoon ? (
                 <Tag color="gray" variant="tonal">
@@ -1076,6 +1248,7 @@ function UsedInSection() {
 
 function PartnerSection() {
   const { emblaRef, scrollPrev, scrollNext } = useScaledLogoCarousel();
+  const partnerSlides = [...researchPartners, ...researchPartners];
 
   return (
     <Section id="partners">
@@ -1089,8 +1262,8 @@ function PartnerSection() {
 
       <LogoCarouselContainer className="embla" edgeFade ref={emblaRef}>
         <LogoCarouselTrack className="embla__container">
-          {researchPartners.map((partner) => (
-            <LogoCarouselSlide key={partner.name}>
+          {partnerSlides.map((partner, index) => (
+            <LogoCarouselSlide key={`${partner.name}-${index}`}>
               <LogoSlideCard className="embla__slide_card">
                 <PartnerCard glossBorder>
                   <PartnerLogo src={partner.src} alt={partner.alt} darkOnLight={partner.darkOnLight} />
@@ -1186,7 +1359,7 @@ export default function App() {
       <SiteShell>
         <TopNavigation>
           <TopNavigationContent>
-            <BrandTitle>OpenResearchKit</BrandTitle>
+            <BrandTitle href="/">OpenResearchKit</BrandTitle>
             <DesktopNavigation>
               <TopNavigationLinks>
                 <TopNavigationLinkButton asComponent="button" onClick={() => scrollToSection('research')}>
@@ -1194,6 +1367,9 @@ export default function App() {
                 </TopNavigationLinkButton>
                 <TopNavigationLinkButton asComponent="button" onClick={() => scrollToSection('partners')}>
                   Institutions
+                </TopNavigationLinkButton>
+                <TopNavigationLinkButton asComponent="anchor" href="/about/">
+                  About
                 </TopNavigationLinkButton>
               </TopNavigationLinks>
               <TopNavigationSpacer />
@@ -1215,7 +1391,7 @@ export default function App() {
                 aria-controls="mobile-navigation-panel"
                 aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
-                <Icon name="Bars" size={22} />
+                <Icon name="Bars" size={20} />
               </MobileMenuToggle>
             </MobileMenuButtonContainer>
           </TopNavigationContent>
@@ -1229,6 +1405,9 @@ export default function App() {
               </MobileNavigationButton>
               <MobileNavigationButton asComponent="button" onClick={() => scrollToSection('partners')}>
                 Institutions
+              </MobileNavigationButton>
+              <MobileNavigationButton asComponent="anchor" href="/about/" onClick={() => setMobileMenuOpen(false)}>
+                About
               </MobileNavigationButton>
               <MobileNavigationCTA
                 asComponent="anchor"
@@ -1245,19 +1424,13 @@ export default function App() {
         <ContentShell>
           <LandingContainer>
             <HeroSection onContactClick={() => scrollToSection('contact')} />
-            <Separator transparent />
             <OpenSourceSection />
-            <Separator transparent />
+            <CitationSection />
             <PrivacySection />
-            <Separator transparent />
             <CompatibilitySection />
-            <Separator transparent />
             <ResearchSection />
-            <Separator transparent />
             <UsedInSection />
-            <Separator transparent />
             <PartnerSection />
-            <Separator transparent />
             <ContactSection />
           </LandingContainer>
         </ContentShell>
