@@ -289,22 +289,11 @@ const TopNavigationContent = styled.nav`
 `;
 
 const BrandTitle = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
   color: ${(props) => props.theme.colors.text.primary};
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
   text-decoration: none;
-`;
-
-const BrandIcon = styled.img`
-  width: 30px;
-  height: 30px;
-  display: block;
-  object-fit: contain;
-  flex-shrink: 0;
 `;
 
 const DesktopNavigation = styled.div`
@@ -805,6 +794,14 @@ const HeroBadgeWrap = styled.div`
   white-space: nowrap;
 `;
 
+const HeroHeaderIcon = styled.img`
+  width: clamp(74px, 10vw, 108px);
+  height: auto;
+  display: block;
+  align-self: flex-start;
+  margin-bottom: 10px;
+`;
+
 const HeroFundedBy = styled.div`
   margin-top: 20px;
   padding-top: 14px;
@@ -983,14 +980,15 @@ function HeroSection({ onContactClick }: HeroSectionProps) {
     <Hero glossBorder>
       <HeroLayout>
         <HeroCopy>
+          <HeroHeaderIcon src="/images/ork-header-icon.png" alt="" aria-hidden="true" />
+          <Heading.Huge as="h1">
+            Run intervention studies in the wild, not only in the lab.
+          </Heading.Huge>
           <HeroBadgeWrap>
             <Tag color="purple" variant="default">
               Open Source
             </Tag>
           </HeroBadgeWrap>
-          <Heading.Huge as="h1">
-            Run intervention studies in the wild, not only in the lab.
-          </Heading.Huge>
           <HeroSummary>
             OpenResearchKit provides open-source data collection and study infrastructure with
             cutting-edge research techniques for on-device processing, in-app surveys, and
@@ -1370,10 +1368,7 @@ export default function App() {
       <SiteShell>
         <TopNavigation>
           <TopNavigationContent>
-            <BrandTitle href="/">
-              <BrandIcon src="/images/ork-header-icon.png" alt="" aria-hidden="true" />
-              <span>OpenResearchKit</span>
-            </BrandTitle>
+            <BrandTitle href="/">OpenResearchKit</BrandTitle>
             <DesktopNavigation>
               <TopNavigationLinks>
                 <TopNavigationLinkButton asComponent="button" onClick={() => scrollToSection('research')}>

@@ -236,6 +236,14 @@ const Hero = styled(Card)`
   background: linear-gradient(145deg, #fff 0%, #fffdf8 43%, #f8ffff 100%);
 `;
 
+const HeroHeaderIcon = styled.img`
+  width: clamp(74px, 10vw, 108px);
+  height: auto;
+  display: block;
+  align-self: flex-start;
+  margin-bottom: 10px;
+`;
+
 const StoryGrid = styled.div`
   animation: ${floatIn} 0.45s ease both;
   display: grid;
@@ -396,6 +404,7 @@ export default function AboutPage() {
         <ContentShell>
           <PageContent>
             <Hero glossBorder>
+              <HeroHeaderIcon src="/images/ork-header-icon.png" alt="" aria-hidden="true" />
               <Round.Regular>About OpenResearchKit</Round.Regular>
               <Heading.Huge>
                 Built for our own studies in one sec, then shared to accelerate research for everyone.
