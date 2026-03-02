@@ -1129,15 +1129,12 @@ function CitationSection() {
 
   return (
     <Section id="citation">
-      <SectionHeadingRow>
+      <ResearchCard glossBorder>
         <Round.Regular>Suggested Citation</Round.Regular>
         <Paragraph.Regular>
           To reference OpenResearchKit in case you want to refer to it or use it, please use the
           below citation-suggestion.
         </Paragraph.Regular>
-      </SectionHeadingRow>
-
-      <ResearchCard glossBorder>
         <CitationBlocks>
           <CitationItem>
             <CitationItemHeader>
