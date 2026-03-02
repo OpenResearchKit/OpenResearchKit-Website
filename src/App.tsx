@@ -289,11 +289,22 @@ const TopNavigationContent = styled.nav`
 `;
 
 const BrandTitle = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   color: ${(props) => props.theme.colors.text.primary};
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
   text-decoration: none;
+`;
+
+const BrandIcon = styled.img`
+  width: 30px;
+  height: 30px;
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
 `;
 
 const DesktopNavigation = styled.div`
@@ -1359,7 +1370,10 @@ export default function App() {
       <SiteShell>
         <TopNavigation>
           <TopNavigationContent>
-            <BrandTitle href="/">OpenResearchKit</BrandTitle>
+            <BrandTitle href="/">
+              <BrandIcon src="/images/ork-header-icon.png" alt="" aria-hidden="true" />
+              <span>OpenResearchKit</span>
+            </BrandTitle>
             <DesktopNavigation>
               <TopNavigationLinks>
                 <TopNavigationLinkButton asComponent="button" onClick={() => scrollToSection('research')}>
