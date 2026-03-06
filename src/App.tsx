@@ -139,11 +139,6 @@ const researchPartners: PartnerLogoItem[] = [
     darkOnLight: true,
   },
   {
-    name: 'NHS',
-    src: 'logos/nhs.svg',
-    alt: 'National Health Service logo',
-  },
-  {
     name: 'Danish Competition and Consumer Authority',
     src: 'logos/dcaca.png',
     alt: 'Danish Competition and Consumer Authority logo',
@@ -205,12 +200,6 @@ const fundedByOrganizations: LinkedLogoItem[] = [
     src: 'logos/one-sec.png',
     alt: 'one sec logo',
     href: 'https://one-sec.app/',
-  },
-  {
-    name: 'NHS',
-    src: 'logos/nhs.svg',
-    alt: 'National Health Service logo',
-    href: 'https://www.nhs.uk/',
   },
   {
     name: 'Bundeszentrale',
